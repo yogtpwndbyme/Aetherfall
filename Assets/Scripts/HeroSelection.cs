@@ -35,6 +35,11 @@ public class HeroSelection : MonoBehaviour
             {
                 SelectHero();
             }
+            else if (hit.transform.CompareTag("Enemy"))
+            {
+                // Behåll Hero markerad när vi klickar på en fiende.
+                return;
+            }
             else
             {
                 DeselectHero();
