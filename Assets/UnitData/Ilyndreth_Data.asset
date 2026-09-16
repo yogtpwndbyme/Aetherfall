@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a77864c6445e4b940b377b9b804fe509, type: 3}
+  m_Name: Ilyndreth_Data
+  m_EditorClassIdentifier: Assembly-CSharp::UnitData
+  unitName: Ilyndreth
+  title: The Veilweaver
+  role: 4
+  description: Powerful spellcaster built to deal magical damage and control enemies
+    on the battlefield.
+  portrait: {fileID: 21300000, guid: ec8976e66cc13fe4e83cb5f375801b87, type: 3}
+  maxHealth: 150
+  maxMana: 200
+  moveSpeed: 4
+  attackDamage: 18
+  attackRange: 6
+  attackCooldown: 1.5

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a77864c6445e4b940b377b9b804fe509, type: 3}
+  m_Name: Eirvasha_Data
+  m_EditorClassIdentifier: Assembly-CSharp::UnitData
+  unitName: Eirvasha
+  title: The Duskborne Huntress
+  role: 3
+  description: Ranged damage dealer built to eliminate enemies from a distance with
+    precise attacks.
+  portrait: {fileID: 21300000, guid: ce71a611475dc13459b882e8c999557c, type: 3}
+  maxHealth: 160
+  maxMana: 140
+  moveSpeed: 4.3
+  attackDamage: 28
+  attackRange: 7
+  attackCooldown: 1.2
