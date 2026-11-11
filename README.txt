@@ -1,5 +1,23 @@
 # Aetherfall
 
+**EDIT: Looking for 3D Artists and Map Designers!**
+
+I'm currently looking for creative people who would like to contribute to the development of **Aetherfall**!
+
+I'm especially looking for someone experienced in creating **3D character models (using Blender or similar software)** and **environment/map graphics**.
+
+If you're interested in joining the project, feel free to contact me at:
+
+📧 seamuel98@hotmail.com  
+📧 delthox98@hotmail.com
+
+**Credits & Revenue Sharing**
+
+Everyone who contributes will be credited as part of the game's development team. If the game generates revenue, profits will be shared among contributors based on their contributions, with special consideration given to character model creators.
+
+This is currently a passion project, so there is no guaranteed upfront payment.
+
+If you're passionate about game development and want to help bring Aetherfall to life, I'd love to hear from you!
 Aetherfall is a fantasy PvPvE hero game inspired by the charm, hero control and exploration of Warcraft 3, but designed as its own modern game rather than a traditional MOBA.
 
 The goal is to create a large fantasy battlefield where players control a single powerful hero, explore the world, level up, kill creeps and bosses, collect equipment, mine resources and fight other players.
