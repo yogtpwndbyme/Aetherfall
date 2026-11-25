@@ -1,8 +1,34 @@
+
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.EventSystems;
 
 public class UnitSelectionManager : MonoBehaviour
 {
+    public static UnitSelectionManager Instance
+    {
+        get;
+        private set;
+    }
+
+    public HeroSelection MainSelectedHero
+    {
+        get;
+        private set;
+    }
+
+    public HeroInventory MainSelectedInventory
+    {
+        get
+        {
+            if (MainSelectedHero == null)
+                return null;
+
+            return MainSelectedHero
+                .GetComponent<HeroInventory>();
+        }
+    }
+
     [Header("Selection Box")]
     [SerializeField] private RectTransform selectionBox;
 
@@ -14,8 +40,19 @@ public class UnitSelectionManager : MonoBehaviour
 
     private Vector2 dragStartPosition;
     private bool isDragging;
-
     private bool abilityConsumedClick;
+    private bool uiConsumedClick;
+
+    void Awake()
+    {
+        Instance = this;
+    }
+
+    void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
+    }
 
     void Update()
     {
@@ -27,6 +64,13 @@ public class UnitSelectionManager : MonoBehaviour
 
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
+            uiConsumedClick =
+                EventSystem.current != null &&
+                EventSystem.current.IsPointerOverGameObject();
+
+            if (uiConsumedClick)
+                return;
+
             abilityConsumedClick =
                 IsAbilityUsingLeftClick();
 
@@ -34,6 +78,16 @@ public class UnitSelectionManager : MonoBehaviour
             {
                 BeginSelection(mousePosition);
             }
+        }
+
+        if (uiConsumedClick)
+        {
+            if (Mouse.current.leftButton.wasReleasedThisFrame)
+            {
+                uiConsumedClick = false;
+            }
+
+            return;
         }
 
         if (Mouse.current.leftButton.isPressed)
@@ -170,14 +224,10 @@ public class UnitSelectionManager : MonoBehaviour
             if (clickedHero != null)
             {
                 DeselectAllHeroes();
+
                 clickedHero.SetSelected(true);
 
-                if (unitInfoPanel != null)
-                {
-                    unitInfoPanel.ShowUnit(
-                        clickedHero.gameObject
-                    );
-                }
+                SetMainSelectedHero(clickedHero);
 
                 return;
             }
@@ -208,9 +258,12 @@ public class UnitSelectionManager : MonoBehaviour
 
     private void SelectUnitsInsideBox(Vector2 mousePosition)
     {
+        if (Camera.main == null)
+            return;
+
         HeroSelection[] heroes =
             FindObjectsByType<HeroSelection>(
-                FindObjectsSortMode.None
+                FindObjectsSortMode.InstanceID
             );
 
         Vector2 min = new Vector2(
@@ -250,18 +303,36 @@ public class UnitSelectionManager : MonoBehaviour
             }
         }
 
-        if (unitInfoPanel != null)
+        if (
+            MainSelectedHero != null &&
+            MainSelectedHero.IsSelected
+        )
         {
-            if (firstSelectedHero != null)
-            {
-                unitInfoPanel.ShowUnit(
-                    firstSelectedHero.gameObject
-                );
-            }
-            else
-            {
-                unitInfoPanel.HidePanel();
-            }
+            SetMainSelectedHero(MainSelectedHero);
+        }
+        else
+        {
+            SetMainSelectedHero(firstSelectedHero);
+        }
+    }
+
+    public void SetMainSelectedHero(HeroSelection hero)
+    {
+        if (hero != null && !hero.IsSelected)
+            return;
+
+        MainSelectedHero = hero;
+
+        if (unitInfoPanel == null)
+            return;
+
+        if (hero != null)
+        {
+            unitInfoPanel.ShowUnit(hero.gameObject);
+        }
+        else
+        {
+            unitInfoPanel.HidePanel();
         }
     }
 
@@ -276,5 +347,7 @@ public class UnitSelectionManager : MonoBehaviour
         {
             hero.SetSelected(false);
         }
+
+        MainSelectedHero = null;
     }
 }

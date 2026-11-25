@@ -1,3 +1,4 @@
+
 using UnityEngine;
 
 public class DroppedItem : MonoBehaviour
@@ -5,65 +6,79 @@ public class DroppedItem : MonoBehaviour
     [Header("Pickup")]
     [SerializeField] private float pickupDistance = 1.5f;
 
-    private Transform hero;
-    private HeroInventory heroInventory;
     private ItemData itemData;
+    private bool isPickedUp;
 
     void Start()
     {
-        HeroMovement heroMovement = FindFirstObjectByType<HeroMovement>();
-
-        if (heroMovement != null)
-        {
-            hero = heroMovement.transform;
-            heroInventory = heroMovement.GetComponent<HeroInventory>();
-        }
-
         itemData = GetComponent<ItemData>();
 
         if (itemData == null)
         {
-            Debug.LogWarning("DroppedItem has no ItemData component.");
+            Debug.LogWarning(
+                "DroppedItem has no ItemData component."
+            );
         }
     }
 
     void Update()
     {
-        if (hero == null)
+        if (isPickedUp || itemData == null)
             return;
 
-        float distanceToHero = Vector3.Distance(
-            transform.position,
-            hero.position
-        );
+        HeroMovement[] heroes =
+            FindObjectsByType<HeroMovement>(
+                FindObjectsSortMode.None
+            );
 
-        if (distanceToHero <= pickupDistance)
+        HeroInventory closestInventory = null;
+        float closestDistance = float.MaxValue;
+
+        foreach (HeroMovement hero in heroes)
         {
-            TryPickUp();
+            HeroInventory inventory =
+                hero.GetComponent<HeroInventory>();
+
+            if (inventory == null)
+                continue;
+
+            if (inventory.CurrentItems >= inventory.MaxItems)
+                continue;
+
+            float distance = Vector3.Distance(
+                transform.position,
+                hero.transform.position
+            );
+
+            if (distance <= pickupDistance &&
+                distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestInventory = inventory;
+            }
+        }
+
+        if (closestInventory != null)
+        {
+            TryPickUp(closestInventory);
         }
     }
 
-    private void TryPickUp()
+    private void TryPickUp(HeroInventory inventory)
     {
-        if (heroInventory == null)
-        {
-            Debug.LogWarning("Hero has no HeroInventory component.");
+        if (isPickedUp)
             return;
-        }
 
-        if (itemData == null)
-        {
-            Debug.LogWarning("This dropped item has no ItemData.");
-            return;
-        }
-
-        bool itemAdded = heroInventory.TryAddItem(itemData);
+        bool itemAdded = inventory.TryAddItem(itemData);
 
         if (!itemAdded)
             return;
 
+        isPickedUp = true;
+
         Debug.Log(
-            "Hero picked up " +
+            inventory.gameObject.name +
+            " picked up " +
             itemData.ItemName +
             "."
         );

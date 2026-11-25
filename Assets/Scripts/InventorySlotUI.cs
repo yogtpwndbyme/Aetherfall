@@ -1,10 +1,11 @@
+
 using UnityEngine;
 using UnityEngine.UI;
 
 public class InventorySlotUI : MonoBehaviour
 {
+    [Header("Inventory Slot")]
     [SerializeField] private int slotIndex = 0;
-    [SerializeField] private HeroInventory heroInventory;
 
     [Header("Colors")]
     [SerializeField] private Color normalColor =
@@ -15,6 +16,18 @@ public class InventorySlotUI : MonoBehaviour
 
     private Button button;
     private Image slotImage;
+
+    private HeroInventory CurrentInventory
+    {
+        get
+        {
+            if (UnitSelectionManager.Instance == null)
+                return null;
+
+            return UnitSelectionManager.Instance
+                .MainSelectedInventory;
+        }
+    }
 
     void Awake()
     {
@@ -27,6 +40,14 @@ public class InventorySlotUI : MonoBehaviour
         }
     }
 
+    void OnDestroy()
+    {
+        if (button != null)
+        {
+            button.onClick.RemoveListener(HandleClick);
+        }
+    }
+
     void Update()
     {
         UpdateVisual();
@@ -34,27 +55,37 @@ public class InventorySlotUI : MonoBehaviour
 
     private void HandleClick()
     {
-        if (heroInventory == null)
-        {
-            Debug.LogWarning("InventorySlotUI has no HeroInventory assigned.");
-            return;
-        }
+        HeroInventory inventory = CurrentInventory;
 
-        heroInventory.ToggleEquipItem(slotIndex);
+        if (inventory == null)
+            return;
+
+        inventory.ToggleEquipItem(slotIndex);
     }
 
     private void UpdateVisual()
     {
-        if (slotImage == null || heroInventory == null)
+        HeroInventory inventory = CurrentInventory;
+
+        bool hasItem =
+            inventory != null &&
+            slotIndex >= 0 &&
+            slotIndex < inventory.CurrentItems;
+
+        if (button != null)
+        {
+            button.interactable = hasItem;
+        }
+
+        if (slotImage == null)
             return;
 
-        if (heroInventory.IsItemEquipped(slotIndex))
-        {
-            slotImage.color = equippedColor;
-        }
-        else
-        {
-            slotImage.color = normalColor;
-        }
+        bool isEquipped =
+            hasItem &&
+            inventory.IsItemEquipped(slotIndex);
+
+        slotImage.color = isEquipped
+            ? equippedColor
+            : normalColor;
     }
 }

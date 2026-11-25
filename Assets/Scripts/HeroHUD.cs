@@ -1,12 +1,14 @@
+
 using UnityEngine;
 using TMPro;
 
 public class HeroHUD : MonoBehaviour
 {
-    [Header("Hero")]
-    [SerializeField] private HeroProgression heroProgression;
-    [SerializeField] private HeroHealth heroHealth;
-    [SerializeField] private HeroInventory heroInventory;
+    private HeroProgression heroProgression;
+    private HeroHealth heroHealth;
+    private HeroInventory heroInventory;
+
+    private HeroSelection currentHero;
 
     [Header("HUD Text")]
     [SerializeField] private TMP_Text levelText;
@@ -27,61 +29,93 @@ public class HeroHUD : MonoBehaviour
 
     void Update()
     {
+        UpdateSelectedHero();
         UpdateHUD();
+    }
+
+    private void UpdateSelectedHero()
+    {
+        HeroSelection selectedHero = null;
+
+        if (UnitSelectionManager.Instance != null)
+        {
+            selectedHero = UnitSelectionManager.Instance
+                .MainSelectedHero;
+        }
+
+        if (selectedHero == currentHero &&
+            selectedHero != null)
+            return;
+
+        currentHero = selectedHero;
+
+        if (currentHero == null)
+        {
+            heroProgression = null;
+            heroHealth = null;
+            heroInventory = null;
+            return;
+        }
+
+        heroProgression =
+            currentHero.GetComponent<HeroProgression>();
+
+        heroHealth =
+            currentHero.GetComponent<HeroHealth>();
+
+        heroInventory =
+            currentHero.GetComponent<HeroInventory>();
     }
 
     private void UpdateHUD()
     {
-        if (heroProgression != null)
+        if (levelText != null)
         {
-            if (levelText != null)
-            {
-                levelText.text =
-                    "Level " +
-                    heroProgression.CurrentLevel;
-            }
-
-            if (xpText != null)
-            {
-                xpText.text =
-                    "XP " +
-                    heroProgression.CurrentXP +
-                    " / " +
-                    heroProgression.XPToNextLevel;
-            }
-
-            if (goldText != null)
-            {
-                goldText.text =
-                    "Gold " +
-                    heroProgression.CurrentGold;
-            }
+            levelText.text = heroProgression != null
+                ? "Level " + heroProgression.CurrentLevel
+                : "Level -";
         }
 
-        if (heroHealth != null && healthText != null)
+        if (xpText != null)
         {
-            healthText.text =
-                "HP " +
-                heroHealth.CurrentHealth +
-                " / " +
-                heroHealth.MaxHealth;
+            xpText.text = heroProgression != null
+                ? "XP " +
+                  heroProgression.CurrentXP +
+                  " / " +
+                  heroProgression.XPToNextLevel
+                : "XP -";
         }
 
-        if (heroInventory != null)
+        if (goldText != null)
         {
-            if (inventoryText != null)
-            {
-                inventoryText.text =
-                    "Inventory " +
-                    heroInventory.CurrentItems +
-                    " / " +
-                    heroInventory.MaxItems;
-            }
-
-            UpdateWeaponText();
-            UpdateInventorySlots();
-            UpdateEquipmentSlots();
+            goldText.text = heroProgression != null
+                ? "Gold " + heroProgression.CurrentGold
+                : "Gold -";
         }
+
+        if (healthText != null)
+        {
+            healthText.text = heroHealth != null
+                ? "HP " +
+                  heroHealth.CurrentHealth +
+                  " / " +
+                  heroHealth.MaxHealth
+                : "HP -";
+        }
+
+        if (inventoryText != null)
+        {
+            inventoryText.text = heroInventory != null
+                ? "Inventory " +
+                  heroInventory.CurrentItems +
+                  " / " +
+                  heroInventory.MaxItems
+                : "Inventory -";
+        }
+
+        UpdateWeaponText();
+        UpdateInventorySlots();
+        UpdateEquipmentSlots();
     }
 
     private void UpdateWeaponText()
@@ -89,7 +123,8 @@ public class HeroHUD : MonoBehaviour
         if (weaponText == null)
             return;
 
-        if (heroInventory.EquippedWeaponName == "None")
+        if (heroInventory == null ||
+            heroInventory.EquippedWeaponName == "None")
         {
             weaponText.text = "Weapon: None";
         }
@@ -114,8 +149,9 @@ public class HeroHUD : MonoBehaviour
             if (itemNameTexts[i] == null)
                 continue;
 
-            itemNameTexts[i].text =
-                heroInventory.GetItemName(i);
+            itemNameTexts[i].text = heroInventory != null
+                ? heroInventory.GetItemName(i)
+                : "Empty";
         }
     }
 
@@ -124,6 +160,7 @@ public class HeroHUD : MonoBehaviour
         if (weaponSlotText != null)
         {
             weaponSlotText.text =
+                heroInventory == null ||
                 heroInventory.EquippedWeaponName == "None"
                 ? "Weapon"
                 : heroInventory.EquippedWeaponName;
@@ -132,6 +169,7 @@ public class HeroHUD : MonoBehaviour
         if (helmetSlotText != null)
         {
             helmetSlotText.text =
+                heroInventory == null ||
                 heroInventory.EquippedHelmetName == "None"
                 ? "Head"
                 : heroInventory.EquippedHelmetName;
@@ -140,6 +178,7 @@ public class HeroHUD : MonoBehaviour
         if (chestSlotText != null)
         {
             chestSlotText.text =
+                heroInventory == null ||
                 heroInventory.EquippedChestName == "None"
                 ? "Chest"
                 : heroInventory.EquippedChestName;
@@ -148,6 +187,7 @@ public class HeroHUD : MonoBehaviour
         if (bootsSlotText != null)
         {
             bootsSlotText.text =
+                heroInventory == null ||
                 heroInventory.EquippedBootsName == "None"
                 ? "Boots"
                 : heroInventory.EquippedBootsName;
